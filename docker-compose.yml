@@ -1,0 +1,16 @@
+version: '3'
+services:
+  express-user-management-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    links:
+      - cache:cache
+    volumes:
+      - "./:/home/node/app"
+    ports:
+      - 3500:3500
+  cache:
+    image: redis
+    ports:
+      - "127.0.0.1:6379:6379"
