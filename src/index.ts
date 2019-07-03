@@ -25,6 +25,12 @@ app.use(async (req, res, next) => {
     router(req, res, next)
 });
 
+app.use(function (err, req, res, next) {
+    console.error(err.stack);
+
+    res.status(500).send(err.message);
+});
+
 Redis.connect('cache', 'cache');
 
 // Start the app on given port
