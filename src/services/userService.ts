@@ -32,12 +32,26 @@ export default class UserService {
     }
 
     async get() {
-        let result = await this.redis.get('*');
+        try {
+            let result = await this.redis.keys('*');
 
-        return result;
+            result = result
+                .filter(key => key !== 'key')
+                .map(async (key) => {
+                    let user = await this.getOne(key);
+
+                    user.id = key;
+
+                    return user;
+                });
+
+            return await Promise.all(result);
+        } catch (err) {
+            throw new Error('Users could not be found!');
+        }
     }
 
-    async getOne(id: string): Promise<Object> {
+    async getOne(id: string): Promise<any> {
         try {
             let result = await this.redis.get(id);
 
@@ -51,7 +65,7 @@ export default class UserService {
         }
     }
 
-    async delete(id: string): Promise<Boolean> {
+    async delete(id: string): Promise<boolean> {
         try {
             const result = await this.redis.del(id);
 
