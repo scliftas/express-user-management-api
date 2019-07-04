@@ -1,4 +1,5 @@
 import * as Redis from '../redis';
+import User from '../types/user';
 
 export default class UserService {
     protected redis;
@@ -7,10 +8,16 @@ export default class UserService {
         this.redis = Redis.getConnection('cache');
     }
 
-    async create(data: any): Promise<Object> {
+    /**
+     * Create a new user
+     * 
+     * @param data - User data to store
+     * @returns The created user object
+     */
+    async create(data: User): Promise<User> {
         const id = await this.generateID();
 
-        await this.redis.set(id, JSON.stringify(data));
+        await this.save(id, data);
         await this.redis.set('key', id);
 
         data.id = id;
@@ -18,9 +25,16 @@ export default class UserService {
         return data;
     }
 
-    async update(id: string, data: any): Promise<Object> {
+    /**
+     * Update an existing user
+     * 
+     * @param id - ID of the user to update
+     * @param data - Data to update the user with
+     * @returns The updated user object
+     */
+    async update(id: number, data: User): Promise<User> {
         try {
-            await this.redis.set(id, JSON.stringify(data));
+            await this.save(id, data);
 
             data.id = id;
 
@@ -31,7 +45,12 @@ export default class UserService {
         
     }
 
-    async get() {
+    /**
+     * Get all existing users
+     * 
+     * @returns An array of all existing users
+     */
+    async get(): Promise<User[]> {
         try {
             let result = await this.redis.keys('*');
 
@@ -51,11 +70,17 @@ export default class UserService {
         }
     }
 
-    async getOne(id: string): Promise<any> {
+    /**
+     * Get an existing user
+     * 
+     * @param id - ID of the user to retrieve
+     * @returns The retrieved user object
+     */
+    async getOne(id: string): Promise<User> {
         try {
             let result = await this.redis.get(id);
 
-            result = JSON.parse(result);
+            result = <User> JSON.parse(result);
 
             result.id = id;
 
@@ -65,6 +90,12 @@ export default class UserService {
         }
     }
 
+    /**
+     * Delete an existing user
+     * 
+     * @param id - ID of the user to delete
+     * @returns Result of the deletion (successful/unsuccessful)
+     */
     async delete(id: string): Promise<boolean> {
         try {
             const result = await this.redis.del(id);
@@ -75,7 +106,23 @@ export default class UserService {
         }
     }
 
-    async generateID(): Promise<Number> {
+    /**
+     * Save the given data to Redis
+     * 
+     * @param id - ID to use as the key
+     * @param user - User data to store
+     * @returns Result of the operation (successful/unsuccessful)
+     */
+    async save(id: number, user: User): Promise<boolean> {
+        return await this.redis.set(id, JSON.stringify(user));
+    }
+
+    /**
+     * Generate a unique incremental ID
+     * 
+     * @returns Unique ID to use
+     */
+    async generateID(): Promise<number> {
         let key = await this.redis.get('key');
 
         if (key === null) return 1;

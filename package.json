@@ -30,6 +30,7 @@
       "typescript": "2.5.2"
    },
    "dependencies": {
+      "@types/ioredis": "^4.0.12",
       "body-parser": "^1.18.3",
       "express": "^4.16.4",
       "express-joi-validation": "^0.3.0",
