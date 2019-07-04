@@ -3,7 +3,7 @@ import UserService from '../services/userService';
 
 const catcher = func => async (req, res, next) => {
 	try {
-		return func(req, res, next);
+		return await func(req, res, next);
 	} catch(err) {
         console.log(err);
 		next(err);
