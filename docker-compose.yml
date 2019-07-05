@@ -7,7 +7,7 @@ services:
     links:
       - cache:cache
     volumes:
-      - "./:/home/node/app"
+      - "./src/:/home/node/app/src"
     ports:
       - 3500:3500
   cache:
