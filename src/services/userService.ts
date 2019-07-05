@@ -34,6 +34,8 @@ export default class UserService {
      */
     async update(id: number, data: User): Promise<User> {
         try {
+            await this.getOne(id);
+            
             await this.save(id, data);
 
             data.id = id;
@@ -76,7 +78,7 @@ export default class UserService {
      * @param id - ID of the user to retrieve
      * @returns The retrieved user object
      */
-    async getOne(id: string): Promise<User> {
+    async getOne(id: number): Promise<User> {
         try {
             let result = await this.redis.get(id);
 
