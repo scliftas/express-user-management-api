@@ -1,4 +1,4 @@
-import joiValidator from 'express-joi-validation';
+import {createValidator} from 'express-joi-validation';
 
 /**
  * Custom request pattern written to make writing Joi
@@ -15,7 +15,7 @@ export default abstract class Request {
      * @returns Joi validation results
      */
     static validate() {
-        const validator = joiValidator({});
+        const validator = createValidator({});
 
         return this.rules.map((rule) => {
             const type = rule.type;
